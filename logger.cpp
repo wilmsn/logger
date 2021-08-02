@@ -1,37 +1,56 @@
 #include "logger.h"
 
-Logger::Logger(unsigned int _logsize) {
-    logsize = _logsize;
-    logbuf = new char*[logsize];
+Logger::Logger(unsigned int _numLines, unsigned int _lineSize) {
+  lineSize = _lineSize;
+  numLines = _numLines;
 }
 
 
 void Logger::begin(void) {
-  for (int i=0; i<logsize; i++) {
-    logbuf[i]=0;
+  outbuf = (char*)malloc(lineSize*numLines+1);
+  logbuf = new char*[lineSize];
+  for (int i=0; i<numLines; i++) {
+    logbuf[i] = (char*)malloc(lineSize+1);
+    memset(logbuf[i],0,lineSize);
   }  
 }
 
-void Logger::add(char* prefix, char* buf) {
-  unsigned int entrylength = strlen(buf)+strlen(prefix)+3;  
-  if (logbuf[logsize - 1] != 0) {
-    free(logbuf[0]);
-    for (unsigned int i=1; i<logsize; i++) {
-      logbuf[i-1]=logbuf[i];
-    }
-  }
-  logbuf[logsize-1]=(char*)malloc(entrylength);
-  snprintf(logbuf[logsize-1],entrylength,"%s: %s", prefix, buf);
-//  logbuf[logsize-1][strlen(buf)]='\0';
+void Logger::addLine(const char* buf1, const char* buf2, const char* buf3) {
+  freeLine();
+  snprintf(logbuf[numLines-1],lineSize,"%s: %s: %s", buf1,buf2,buf3);
 }
 
-String Logger::printBuffer(void) {
-  String retval;  
-  for (unsigned int i=0; i<logsize; i++) {
-    if (logbuf[i] != 0 ) {  
-      retval += logbuf[i];
-      retval += "\n";
+void Logger::addLine(const char* buf1, const char* buf2) {
+  freeLine();
+  snprintf(logbuf[numLines-1],lineSize,"%s: %s", buf1, buf2);
+}
+
+void Logger::addLine(const char* buf1) {
+  freeLine();
+  snprintf(logbuf[numLines-1],lineSize,"%s", buf1);
+}
+
+void Logger::freeLine(void) {
+  for (unsigned int i=1; i<numLines; i++) {
+    sprintf(logbuf[i-1],"%s",logbuf[i]);
+  }
+}
+
+unsigned int Logger::get_lineNo(void) {
+  return numLines;
+}
+
+bool Logger::lineIsUsed(unsigned int lineNo) {
+  if (logbuf[lineNo][0] == '\0' ) { return false; } else { return true; }
+}
+
+char* Logger::printBuffer(void) {
+  memset(outbuf,0,sizeof outbuf);  
+  for (unsigned int i=0; i<numLines; i++) {
+    if (logbuf[i][0] != 0 ) {  
+      strcat(outbuf,logbuf[i]);
+      strcat(outbuf,"\n");
     }
   }
-  return retval;
+  return outbuf;
 }

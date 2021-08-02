@@ -12,16 +12,20 @@
 
 class Logger {
 public:
-    Logger(unsigned int _logsize);
+    Logger(unsigned int _numLines, unsigned int _lineSize);
     void begin(void);
-    String printBuffer(void);
-    void add(char* prefix, char* buf);
+    unsigned int get_lineNo(void);
+    bool lineIsUsed(unsigned int lineNo);
+    char* printBuffer(void);
+    void addLine(const char* buf1, const char* buf2, const char* buf3);
+    void addLine(const char* buf1, const char* buf2);
+    void addLine(const char* buf1);
     
 private:
-    unsigned int logsize;   
+    unsigned int lineSize, numLines;   
     char** logbuf;
-    
-    
+    char*  outbuf;
+    void freeLine(void);
 };
 
 
