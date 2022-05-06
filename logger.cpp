@@ -5,29 +5,36 @@ Logger::Logger(unsigned int _numLines, unsigned int _lineSize) {
   numLines = _numLines;
 }
 
-
 void Logger::begin(void) {
   outbuf = (char*)malloc(lineSize*numLines+1);
   logbuf = new char*[lineSize];
+  posInLine = 0;
   for (int i=0; i<numLines; i++) {
     logbuf[i] = (char*)malloc(lineSize+1);
     memset(logbuf[i],0,lineSize);
   }  
 }
 
-void Logger::addLine(const char* buf1, const char* buf2, const char* buf3) {
-  freeLine();
-  snprintf(logbuf[numLines-1],lineSize,"%s: %s: %s", buf1,buf2,buf3);
-}
-
-void Logger::addLine(const char* buf1, const char* buf2) {
-  freeLine();
-  snprintf(logbuf[numLines-1],lineSize,"%s: %s", buf1, buf2);
-}
-
-void Logger::addLine(const char* buf1) {
-  freeLine();
-  snprintf(logbuf[numLines-1],lineSize,"%s", buf1);
+size_t Logger::write(uint8_t c) { 
+    size_t retval=0;
+    // CF und LF sorgen für Zeilenumbruch
+    if (c == 10 || c == 13) {
+       freeLine();	
+       posInLine = 0;
+    }
+    if ( posInLine < lineSize ) {
+	if (c > 31 && c < 127) {
+	    logbuf[numLines-1][posInLine] = c;
+	    posInLine++;
+	    retval = 1;
+        }
+    } else {
+	retval = 0;
+    }
+#ifdef ESP8266
+    delay(0);
+#endif    
+    return retval; 
 }
 
 void Logger::freeLine(void) {

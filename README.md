@@ -7,3 +7,16 @@ If you pass more than M characters, additional characters will be truncated.
 M and N is configurable, but you need 2*N*M bytes of RAM.
 
 So 20 lines of 80(+1) characters each will take 3240 Bytes!!!
+
+Code example:
+
+#include <logger.h>
+
+Logger logger = Logger(20,60);
+
+logger.print("Wert: ");
+logger.println(6);
+
+logger.printBuffer();
+
+
