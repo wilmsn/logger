@@ -40,6 +40,7 @@ size_t Logger::write(uint8_t c) {
 void Logger::freeLine(void) {
   for (unsigned int i=1; i<numLines; i++) {
     sprintf(logbuf[i-1],"%s",logbuf[i]);
+    memset(logbuf[i],0,lineSize);
   }
 }
 
