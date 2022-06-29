@@ -9,7 +9,7 @@ void Logger::begin(void) {
   outbuf = (char*)malloc(lineSize*numLines+1);
   logbuf = new char*[lineSize];
   posInLine = 0;
-  for (int i=0; i<numLines; i++) {
+  for (unsigned int i=0; i<numLines; i++) {
     logbuf[i] = (char*)malloc(lineSize+1);
     memset(logbuf[i],0,lineSize);
   }  
@@ -53,7 +53,7 @@ bool Logger::lineIsUsed(unsigned int lineNo) {
 }
 
 char* Logger::printBuffer(void) {
-  memset(outbuf,0,sizeof outbuf);  
+  memset(outbuf,0,lineSize*numLines+1);  
   for (unsigned int i=0; i<numLines; i++) {
     if (logbuf[i][0] != 0 ) {  
       strcat(outbuf,logbuf[i]);
